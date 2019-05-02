@@ -1,1 +1,2 @@
-%test script
+%read video
+video = mmreader()
