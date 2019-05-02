@@ -1,0 +1,16 @@
+%FRAME ISOLATION
+
+fileName = 'IONX0009.MP4';
+
+%import video
+file = VideoReader(fileName);
+%get number of frames
+nFrame = file.NumberOfFrames;
+
+frm = [];
+frm=[frm;sadsa]
+
+for i = 1:nFrame
+    frm(i) = read(file, i);
+end
+
