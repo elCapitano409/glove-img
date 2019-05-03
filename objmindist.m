@@ -7,13 +7,13 @@ function index = objmindist(oldc,newc,plane)
 
 s = size(newc);
 nnewc = s(1); %number of new circles to be checked
-d = zero(nnewc); %array to store distances
+d = zeros(nnewc,1); %array to store distances
 
 %checks plane to determine what coordinates to use
 if strcmp(plane,'xz')||strcmp(plane,'zx')
     a = 1; %x 
     b = 3; %z
-elseif strcmp(plane, 'yz')||strcmp(plan,'zy')
+elseif strcmp(plane, 'yz')||strcmp(plane,'zy')
     a = 2; %y
     b = 3; %z
 else
@@ -29,6 +29,6 @@ for ii = 1:nnewc
 end
 
 [m, index] = min(d); %find index of minimum distance
-
+d
 end
 

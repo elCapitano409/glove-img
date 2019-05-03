@@ -5,7 +5,7 @@
 
 
 %video download and frame isolation
-fileName = 'IONX0015';
+fileName = 'IONX0016';
 
 s = vid2struct(fileName); %breaks video down into frames
 gs = RGBstrut2grey(s);  %access elements of gs with gs{a}
@@ -34,32 +34,25 @@ tic;
 for jj = 1:fnum
     center = imfindcircles(gs{jj},[90 120], 'ObjectPolarity', pol,...
     'Sensitivity',sen); %find xy position of circle
-    
-    
+
+    missh = 0; %how many missing circles have been handled
     %loop through circles
     for ii = 1:cnum
-        
-        %the circle that is shortest distance from circle ii in previous
-        %frame is treated as circle ii
-        
-        icirc = objmindist(pos(ii,jj-1,:),center,'xy'); %find circle of min dist
-        
-        %TODO: find way to make sure one new circle isn't assigned to two
-        %pos spots
-        
-        
-%         try
-%             pos(ii,jj,1) = center(ii,1); %set x
-%             pos(ii,jj,2) = center(ii,2); %set y
-%             
-%             visf(ii) = jj; %record this frame
-%             
-%         %if one of the circles are not in the frame copy pos of last
-%         %visible frame
-%         catch
-%             pos(ii,jj,1) = pos(ii,visf(ii),1); %set x
-%             pos(ii,jj,2) = pos(ii, visf(ii),2); %set y
-%         end
+        %if first frame
+        if jj == 1
+            pos(ii,jj,1) = center(ii,1); %set x
+            pos(ii,jj,2) = center(ii,2); %set y
+        else
+            a = size (center);
+            if a(2) == cnum
+                %the circle that is shortest distance from circle ii in previous
+                %frame is treated as circle ii
+                icirc = objmindist(pos(ii,jj-1,:),center,'xy'); %find circle of min dist
+           
+                pos(ii,jj,1) = center(icirc(1),1); %set x
+                pos(ii,jj,2) = center(icirc(1),2); %set y
+            end
+        end
     end
 
 end
