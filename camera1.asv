@@ -27,8 +27,6 @@ expdist = zeros(cnum); %initial distances between circles
 cirmiss = []; %vector of circles that are currently missing
 countmiss = 0; %counter of circles that are missing
 
-isvisible = ones(cnum,1); %array of booleans, of if circle is visible
-
 %position -> (circle, frame, xyz coordinate)
 %x = 1
 %y = 2
@@ -66,8 +64,8 @@ for jj = 1:fnum
             %create matrix of circles that are in frame
             cnew = zeros(s(1),2);
             for hh = 1:s(1)
-                if hh ~= cirmiss(1)
-                    cnew(hh,:) = 
+                if hh ~= cirmiss()
+                cnew(hh,:) 
                 
             appearindex = 
             pos(cmiss(1),jj,:) = 

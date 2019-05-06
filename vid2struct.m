@@ -22,14 +22,14 @@ close(wb)                                                   % close progress bar
 % % title('Final Gesture Frame')                                  % add title
 % save(fullfile(pwd,[video_file,'.mat']),'v','s');
 
-fps = v.FrameRate;                                          % get frame rate
-startTime = 0.04;                                             % in seconds
-endTime = 8;                                               % in seconds
-speed =  1;                                               % play back speed
-startFrame = floor(startTime * fps);                        % starting frame
-endFrame = floor(endTime * fps);                            % ending frame
-curAxes = axes;                                             % create axes
-hImage = imshow(s(startFrame).cdata,'Parent',curAxes);                      % create hande
+% fps = v.FrameRate;                                          % get frame rate
+% startTime = 0.04;                                             % in seconds
+% endTime = 8;                                               % in seconds
+% speed =  1;                                               % play back speed
+% startFrame = floor(startTime * fps);                        % starting frame
+% endFrame = floor(endTime * fps);                            % ending frame
+% curAxes = axes;                                             % create axes
+% hImage = imshow(s(startFrame).cdata,'Parent',curAxes);                      % create hande
 % curAxes.XLim = [0 hImage.XData(2)];
 % curAxes.YLim = [0 hImage.YData(2)];
 % title('Gesture Video')                                        % add title

@@ -29,6 +29,5 @@ for ii = 1:nnewc
 end
 
 [m, index] = min(d); %find index of minimum distance
-d
 end
 
