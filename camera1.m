@@ -24,8 +24,6 @@ cnum = circlenum(gs{1},rad,pol,sen); %number of circles
 expc = cnum; %expected number of circles
 
 expdist = zeros(cnum); %initial distances between circles
-cirmiss = []; %vector of circles that are currently missing
-countmiss = 0; %counter of circles that are missing
 
 isvisible = ones(cnum,1); %array of booleans, of if circle is visible
 
@@ -55,22 +53,32 @@ for jj = 1:fnum
         a = size(indexm);
         %loop through vector
         for qq = 1:a(1)
-            countmiss = countmiss+1;
-            cirmiss(countmiss) = indexm(qq);%add index of missing circle to vector
+            isvisible(qq) = 0; %mark circle qq as not visible
         end
+        expc = expc - a(1); %adjust expected circles to number of circles in frame
             
     %check if circles have appeared
     elseif s(1) > expc
-        %only one circle was missing
-        if size(cirmiss) == 1
-            %create matrix of circles that are in frame
-            cnew = zeros(s(1),2);
-            for hh = 1:s(1)
-                if hh ~= cirmiss(1)
-                    cnew(hh,:) = 
-                
-            appearindex = 
-            pos(cmiss(1),jj,:) = 
+        %check if only one circle is missing
+        if countmiss(isvisible) == 1
+            
+            %create matrix of circles that are in frame n-1
+            oldc = zeros(s(1), 2);
+            for hh = 1:cnum
+                if isvisible(hh) == 1
+                    oldc(hh,:) = pos(hh,jj,1:2); %only take x and y coordinate 
+                end
+            end
+            
+            index = findappear(oldc, center); %find the index of circle that has appeared
+            
+            %loop through boolean vector to find index of missing circle
+            for tt = 1:cnum
+                if isvisible(tt) == 0
+                    pos(tt,jj,1:2) = center(index,:); %match added circle to list
+                    %only add x and y component
+                end
+            end
         else
             error('More than one circle was missing. This case was not accounted for.');
         end
@@ -87,8 +95,8 @@ for jj = 1:fnum
             
         %if not first frame
         else
-            a = size (center);
-            if a(2) == cnum
+            %only run if circle is in frame
+            if isvisible(ii) == 1
                 %the circle that is shortest distance from circle ii in previous
                 %frame is treated as circle ii
                 icirc = objmindist(pos(ii,jj-1,:),center,'xy'); %find circle of min dist

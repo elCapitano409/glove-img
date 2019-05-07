@@ -28,11 +28,10 @@ for kk = 1:s2(1)
     for ll = 1:s1(1) 
         
         %if element is equal to zero it is missing and will be skipped
-        if d(kk,ll) == 0
+        if d(ll,kk) == 0
             break;
-        end
         %if one of the distances is less than the min
-        if d(kk,ll) < dmin 
+        if d(ll,kk) < dmin 
             ishere = 1; 
             break;
         end
@@ -42,7 +41,7 @@ for kk = 1:s2(1)
     if ishere == 1
         break;
     else
-        added = ll; %record index of missing circle
+        added = kk; %record index of missing circle
         break;
     end
 end
