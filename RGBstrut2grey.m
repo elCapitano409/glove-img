@@ -4,7 +4,6 @@ function grey = RGBstrut2grey(s)
 a = size(s);
 n = a(2); %number of frames       
 
-res = size(s(1).cdata); %resolution of frames
 grey = cell(1,n);
 
 %loops through entire struct

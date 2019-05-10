@@ -5,14 +5,14 @@
 
 
 %video download and frame isolation
-fileName = 'IONX0023';
+fileName = 'IONX0039';
 
-s = vid2struct(fileName); %breaks video down into frames
-gs = RGBstrut2grey(s);  %access elements of gs with gs{a}
+cs = vid2struct(fileName); %breaks video down into frames
+gs = RGBstrut2grey(cs);  %access elements of gs with gs{a}
 
 
 %find circle position
-rad = [70 95]; %radius range of circles
+rad = [80 100]; %radius range of circles
 pol = 'dark'; %object polarity
 sen = .95; %search sensitivity
 
@@ -33,23 +33,29 @@ isvisible = ones(cnum,1); %array of booleans, of if circle is visible
 %z = 3
 pos = zeros(cnum,fnum,3); %populate position matrix
 
+
+sync = findsyncframe(cs)
+
 wb = waitbar(0,'Analysing frames...'); %start progress bar 
 
 tic;
 %loop through frames
 for jj = 1:fnum
+    
+    waitbar(jj/fnum); %update waitbar
+    
     center = imfindcircles(gs{jj},rad, 'ObjectPolarity', pol,...
     'Sensitivity',sen); %find xy position of circle
    
     %check if there are more circles than in the initial frame 
-    s = size(center);
+    s = size(center); 
     if s(1) > cnum
         disp(jj)
         disp(s(1))
         error('Unexpected circle appeared.');
     %check if circles have dissapeared
     elseif s(1) < expc
-        indexm = findmiss(pos(:,jj,:),center); %find all circles that have dissapeared
+        indexm = findmiss(pos(:,jj-1,1:2),center); %find all circles that have dissapeared
         a = size(indexm);
         %loop through vector
         for qq = 1:a(1)
@@ -122,3 +128,5 @@ for jj = 1:fnum
 end
 toc;
 close(wb); %close progress bar
+
+
