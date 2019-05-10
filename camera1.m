@@ -5,7 +5,7 @@
 
 
 %video download and frame isolation
-fileName = 'IONX0039';
+fileName = 'IONX0048';
 
 cs = vid2struct(fileName); %breaks video down into frames
 gs = RGBstrut2grey(cs);  %access elements of gs with gs{a}
