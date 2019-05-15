@@ -3,21 +3,20 @@
 % Kyle Inzunza
 %}
 
-
+tic;
 %video download and frame isolation
-fileName = 'IONX0048';
+fileName = 'IONX0051';
+fileNameCord = '';
 
 cs = vid2struct(fileName); %breaks video down into frames
 gs = RGBstrut2grey(cs);  %access elements of gs with gs{a}
 
 
-%find circle position
+
 rad = [80 100]; %radius range of circles
 pol = 'dark'; %object polarity
 sen = .95; %search sensitivity
 
-
-default = -1; %default value if the circle is not found
 a = size(gs); 
 fnum = a(2); %number of frames
 cnum = circlenum(gs{1},rad,pol,sen); %number of circles
@@ -34,11 +33,23 @@ isvisible = ones(cnum,1); %array of booleans, of if circle is visible
 pos = zeros(cnum,fnum,3); %populate position matrix
 
 
-sync = findsyncframe(cs)
+
+%readjust for sync
+sync = findsyncframe(gs); %get frame to start recording
+fnum = fnum - sync; %adjust for new size
+if fnum <= 1
+    error('Invalid sync frame selected.')
+end
+newgs = cell(1,fnum);
+for qq = 1:fnum
+    newgs{qq} = gs{qq + sync}; %offset frames 
+end
+gs = newgs; %set as new matrix
+
 
 wb = waitbar(0,'Analysing frames...'); %start progress bar 
 
-tic;
+
 %loop through frames
 for jj = 1:fnum
     
@@ -126,6 +137,7 @@ for jj = 1:fnum
     end
 
 end
+
 toc;
 close(wb); %close progress bar
 
