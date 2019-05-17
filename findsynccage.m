@@ -1,8 +1,8 @@
 function cage = findsynccage(frame)
 %FINDREFCAGE finds the coordinates that contains the sync LED
 
-center = imfindcircles(frame,[80 100], 'ObjectPolarity', 'dark',...
-    'Sensitivity',0.98); %get circle coordinates
+center = imfindcircles(frame,[35 50], 'ObjectPolarity', 'dark',...
+    'Sensitivity',0.95); %get circle coordinates
 
 cage = zeros(2); %matrix to store 
 
