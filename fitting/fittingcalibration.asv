@@ -28,7 +28,7 @@ gridt(cid(1),cid(2),:) = cxy(:); %set middle index
 cidx = cid(1);
 cidy = cid(2);
 
-%% colrow method for true grid
+%% colrow method
 
 
 %loop through columns
@@ -51,7 +51,7 @@ for ii = 1:(size(csort,2))
     
 end
 
-%% spiral method for true grid
+%% spiral method
 
 % brad = 1; %distance away from center block;
 % flag = true; %boolean to set loop

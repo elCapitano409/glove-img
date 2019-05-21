@@ -39,7 +39,7 @@ if circxy(1) < imcenter(1) && circxy(2) > imcenter(2)
     closest(1,2,:) = g(circidx+1,circidy,:); %top right
     closest(2,1,:) = g(circidx,circidy-1,:); %bottom left
     closest(2,2,:) = g(circidx+1,circidy-1,:); %bottom right
-    disp('top left')
+%     disp('top left')
 
 %if in the top right corner
 elseif circxy(1) > imcenter(1) && circxy(2) > imcenter(2)
@@ -48,7 +48,7 @@ elseif circxy(1) > imcenter(1) && circxy(2) > imcenter(2)
     closest(1,1,:) = g(circidx-1,circidy,:); %top left
     closest(2,1,:) = g(circidx-1,circidy-1,:); %bottom left
     closest(2,2,:) = g(circidx,circidy-1,:); %bottom right
-    disp('top right')
+%     disp('top right')
 
 %if in the bottom left corner
 elseif circxy(1) < imcenter(1) && circxy(2) < imcenter(2)
@@ -57,7 +57,7 @@ elseif circxy(1) < imcenter(1) && circxy(2) < imcenter(2)
     closest(1,1,:) = g(circidx,circidy+1,:); %top left
     closest(1,2,:) = g(circidx+1,circidy+1,:); %top right
     closest(2,2,:) = g(circidx+1,circidy,:); %bottom right
-    disp('bottom left')
+%     disp('bottom left')
     
 %if in the bottom right corner
 elseif circxy(1) > imcenter(1) && circxy(2) < imcenter(2)
@@ -66,7 +66,7 @@ elseif circxy(1) > imcenter(1) && circxy(2) < imcenter(2)
     closest(1,1,:) = g(circidx-1,circidy+1,:); %top left
     closest(2,1,:) = g(circidx-1,circidy,:); %bottom left
     closest(2,2,:) = g(circidx,circidy+1,:); %top right
-    disp('bottom right')
+%     disp('bottom right')
 
 else 
     error('Problem with detecting four center circles.');

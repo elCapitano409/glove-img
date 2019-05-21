@@ -1,4 +1,4 @@
-function [xy,id] = find1closest(center,g)
+function [xy,id] = find1closest(imcenter,g)
 %FIND1CLOSEST outputs the coordinates and index of the circle closest to
 %the center
 
@@ -18,10 +18,10 @@ end
 
 %find index of circle with smallest distance
 [~,idx]=min(d(:));
-id =ind2sub(size(d),idx);
+[circidx,circidy] =ind2sub(size(d),idx);
         
 xy = [g(circidx,circidy,1),g(circidx,circidy,2)]; %find coordinates of closest circle
-
+id = [circidx,circidy]; %set index
 
 end
 
