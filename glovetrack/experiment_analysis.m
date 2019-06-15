@@ -205,5 +205,12 @@ if d.markernum_top(2) ~= 0
     end
 end
 
+d.pweb(:,1,:) = webfindcircles(vid_web{1}); %write webcam marker position for initial frame
+
+%% remaining frames (side)
+
+%% remaining frames (top)
+
+%% remaining frame (webcam)
 
 
