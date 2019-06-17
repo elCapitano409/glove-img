@@ -21,7 +21,48 @@ vid_side = RGBstrut2grey(vid2struct(vid_side_name));
 % side_res = size(vid_side{1});
 % webcam_res = size(vid_webcam{1});
 
-manipulations = getmanframes(); %get frames that were manipulated in the expirement
+%% get manipulation time stamps
+
+manipulations = cell(3,1); %array to store manipulation timestamps
+
+%loop through all 3 camera feeds
+for ii = 1:3
+
+    %display feed name to user
+    if ii == 1
+        disp('---ION CAMERA---');
+    elseif ii == 2
+        disp('---CANON CAMERA---');
+    else
+        disp('---LOGITECH WEBCAM---');
+    end
+    
+    counter = 1; %counts the amount of manipulations
+    m = []; %array to hold manipulations 
+    
+    %loop until user ends
+    while true
+        startf = input(['Input the start timestamp of manipulation ' num2str(counter) ' (if there are no more manipulations input "N") FORMAT(min:sec): '],'s'); %get start timestamp
+
+        %if no more manipulations
+        if strcmp(start,'N')
+            break;
+        else
+            endf = input(['Input the end timestamp of manipulation ' num2str(counter) ': '],'s'); %get end timestamp
+        end
+        
+        %get seconds and minutes from input
+        startf = split(startf,':'); %split into minutes and seconds
+        endf = split(endf,':'); %split into minutes and seconds
+        
+        %add numerical values to array
+        m(c,1)
+        
+        counter = counter+1; %increase counter by one
+        
+    end
+end
+
 
 
 %% sync videos
