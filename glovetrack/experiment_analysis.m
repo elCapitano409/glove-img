@@ -3,7 +3,7 @@
 %Kyle Inzunza
 %} 
 
-% %% video import
+%% video import
 % 
 % %generate file names
 expname = 'Task2_wrist_trial2'; %name of expirement
@@ -31,10 +31,18 @@ manipulations = getmanframes(); %get frames that were manipulated in the expirem
 sync_side = getsyncframe(vid_side);
 % sync_webcam = getsyncframe(vid_webcam);
 
+%adjust manipulations to sync
+manipulation{1} = manipulation{1} - sync_side;
+manipulation{2} = manipulation{2} - sync_webcam;
+
 %trim videos
 % vid_top = vid_top(sync_top:end);
 vid_side = vid_side(sync_side:end);
 % vid_webcam = vid_webcam(sync_webcam:end);
+
+
+
+
 
 % fnum = min([size(vid_top,2),size(vid_side,2),size(vid_webcam,2)]); %the shortest video's frame number is used for the global frame number
 fnum = size(vid_side,2); %temp
@@ -217,6 +225,13 @@ d.pweb(:,1,:) = webfindcircles(vid_web{1}); %write webcam marker position for in
 
 %loop through remaining frames
 for ii = 2:fnum
+    
+    %check if frame ii is a manipulation frame
+    if isman(ii,manipulations)
+        d.pside(:,ii,:) = nan*ones(size(d.pside(:,1,:))); %write the whole frame as not a number
+        continue; %skip this loop interation
+    end
+    
     prevwc = d.pside(1:d.markernum_side(1),ii-1,:); %postion of all previous frame white markers
     prevbc = d.pside(d.markernum_side(1)+1:end,ii-1,:); %postion of all previous frame black markers
     
@@ -229,9 +244,22 @@ for ii = 2:fnum
     try
         cw = idcircles(cw,prevwc);%identify white circles
         cb = idcircles(cb,prevbc);%identify black circles
-    %some circles are not visible
-    catch
-        d.pside(:,ii,:) = nan*ones(size(d.pside(:,1,:))); %write the whole frame as not a number
+    
+    catch ME 
+        switch ME.identifier
+            %some circles are not visible
+            case 'MyComponent:notenoughmarkers'
+                disp(['Circles missing on IONCAMERA at frame ' num2str(ii)]);
+                d.pside(:,ii,:) = nan*ones(size(d.pside(:,1,:))); %write the whole frame as not a number
+            %previous case was written all as nan
+            case 'MyComponenet:nullprevframe'
+                try
+                    %TODO: finish this code block with indecies and catch
+                    d.pside(:,ii,:) = usridcircles(vid_side)               
+            %not expected error
+            otherwise
+                rethrow(ME); %rethrow exception
+        end
     end
         
 end
@@ -241,4 +269,33 @@ end
 
 %% remaining frame (webcam)
 
+%loop through remaining frames
+for ii = 2:fnum
+    
+    %check if manipulation frame
+    if isman(ii,manipulations)
+        d.pweb(:,ii,:) = nan*ones(6,2); %write the whole frame as not a number
+        continue; %go to next iteration of loop
+    end
+    
+    
+    try
+        d.pweb(:,ii,:) = webfindcircles(vid_web{ii}); %get marker positions
+    catch ME
+        switch ME.identifier
+            case 'MyComponent:blocked'
+                d.pweb(:,ii,:) = nan*ones(6,2); %write the whole frame as not a number
+                disp(['Circles missing on WEBCAM at frame ' num2str(ii)]);
+            case 'MyComponent:watchDog'
+                d.pweb(:,ii,:) = nan*ones(6,2); %write the whole frame as not a number
+                disp(['Too many circles on WEBCAM at frame ' num2str(ii)]);
+                imshow(vid_web{ii}); %display current frame
+            otherwise
+                rethrow(ME); %error was not resolved
+        end 
+    end
+end
+        
+        
+    
 
