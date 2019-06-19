@@ -254,8 +254,15 @@ for ii = 2:fnum
             %previous case was written all as nan
             case 'MyComponenet:nullprevframe'
                 try
-                    %TODO: finish this code block with indecies and catch
-                    d.pside(:,ii,:) = usridcircles(vid_side)               
+                    d.pside(:,ii,:) = usridcircles(vid_side,cw,cb,d.mside); %get user to re-identify markers
+                catch ME
+                    switch ME.identifier
+                        %all circles are still no visible in frame
+                        case 'MyComponent:wrongframe'
+                             d.pside(:,ii,:) = nan*ones(size(d.pside(:,1,:))); %write the whole frame as not a number
+                             continue; %go to next iteration of loop
+                    end
+                end
             %not expected error
             otherwise
                 rethrow(ME); %rethrow exception
