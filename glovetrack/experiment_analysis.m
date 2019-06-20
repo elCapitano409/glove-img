@@ -4,18 +4,18 @@
 %} 
 
 %% video import
-% 
-% %generate file names
+
+%generate file names
 expname = 'Task2_wrist_trial2'; %name of expirement
-% vid_top_name = strcat(expname,'_top');
+vid_top_name = strcat(expname,'_top_trim');
 vid_side_name = strcat(expname,'_side_trim');
-% vid_webcam_name = strcat(expname,'_webcam');
-% 
-% %import videos as a cell array of greyscale frames
-% vid_top = RGBstrut2grey(vid2struct(vid_top_name)); 
+vid_webcam_name = strcat(expname,'_web_trim');
+
+%import videos as a cell array of greyscale frames
+vid_top = RGBstrut2grey(vid2struct(vid_top_name)); 
 vid_side = RGBstrut2grey(vid2struct(vid_side_name)); 
-% vid_webcam = RGBstrut2grey(vid2struct(vid_webcam_name)); 
-% 
+vid_webcam = RGBstrut2grey(vid2struct(vid_webcam_name)); 
+
 % %get video resolutions
 % top_res = size(vid_top{1});
 % side_res = size(vid_side{1});
@@ -27,25 +27,21 @@ manipulations = getmanframes(); %get frames that were manipulated in the expirem
 %% sync videos
 
 %get sync frames for all videos
-% sync_top = getsyncframe(vid_top);
+sync_top = getsyncframe(vid_top);
 sync_side = getsyncframe(vid_side);
-% sync_webcam = getsyncframe(vid_webcam);
+sync_webcam = getsyncframe(vid_webcam);
 
 %adjust manipulations to sync
 manipulation{1} = manipulation{1} - sync_side;
 manipulation{2} = manipulation{2} - sync_webcam;
 
 %trim videos
-% vid_top = vid_top(sync_top:end);
+vid_top = vid_top(sync_top:end);
 vid_side = vid_side(sync_side:end);
-% vid_webcam = vid_webcam(sync_webcam:end);
+vid_webcam = vid_webcam(sync_webcam:end);
 
+fnum = min([size(vid_top,2),size(vid_side,2),size(vid_webcam,2)]); %the shortest video's frame number is used for the global frame number
 
-
-
-
-% fnum = min([size(vid_top,2),size(vid_side,2),size(vid_webcam,2)]); %the shortest video's frame number is used for the global frame number
-fnum = size(vid_side,2); %temp
 
 %% circle identification side view
 
@@ -108,8 +104,11 @@ end
                                                        
 %find circles in frame 1
 %radii and sensitivity has to be manually calibrated
-c_top_w = imfindcircles(vid_top{1}, [1 3], 'ObjectPolarity', 'bright','Sensitivity',.95);
-c_top_b = imfindcircles(vid_top{1}, [1 3], 'ObjectPolarity', 'dark','Sensitivity',.95);
+rad_top = [14,20];
+sen_top = 0.95;
+
+c_top_w = imfindcircles(vid_top{1}, rad_top, 'ObjectPolarity', 'bright','Sensitivity',sen_top);
+c_top_b = imfindcircles(vid_top{1}, rad_top, 'ObjectPolarity', 'dark','Sensitivity',sen_top);
 
 %white markers
 printcircles(vid_sid{1}, c_top_w); %print circles to user
@@ -223,8 +222,12 @@ d.pweb(:,1,:) = webfindcircles(vid_web{1}); %write webcam marker position for in
 
 %% remaining frames (side)
 
+wb = waitbar(0,'Analysing ION CAMERA frames...'); %start progress bar
+
 %loop through remaining frames
 for ii = 2:fnum
+    
+    waitbar(ii/fnum); %update progress bar
     
     %check if frame ii is a manipulation frame
     if isman(ii,manipulations)
@@ -238,8 +241,8 @@ for ii = 2:fnum
     maskedim_white = overlaycirclemask(vid_side{ii},prevwc); %overlay mask on current frame from positions of white markers in previous frame 
     maskedim_blk = overlaycirclemask(vid_side{ii},prevbc); %overlay mask on current frame from positions of black markers in previous frame 
     
-    cw = imfindcircles(maskedim, rad_side, 'ObjectPolarity', 'bright','Sensitivity',sen_side); %get center of white circles in image
-    cb = imfindcircles(maskedim, rad_side, 'ObjectPolarity', 'dark','Sensitivity',sen_side); %get center of black circles in image       
+    cw = imfindcircles(maskedim_white, rad_side, 'ObjectPolarity', 'bright','Sensitivity',sen_side); %get center of white circles in image
+    cb = imfindcircles(maskedim_blk, rad_side, 'ObjectPolarity', 'dark','Sensitivity',sen_side); %get center of black circles in image       
     
     try
         cw = idcircles(cw,prevwc);%identify white circles
@@ -268,16 +271,74 @@ for ii = 2:fnum
                 rethrow(ME); %rethrow exception
         end
     end
-        
 end
+
+close(wb); %close progress bar
 
 
 %% remaining frames (top)
 
-%% remaining frame (webcam)
+wb = waitbar(0,'Analysing CANON CAMERA frames...'); %start progress bar
 
 %loop through remaining frames
 for ii = 2:fnum
+    
+    waitbar(ii/fnum); %update progress bar
+    
+    %check if frame ii is a manipulation frame
+    if isman(ii,manipulations)
+        d.ptop(:,ii,:) = nan*ones(size(d.ptop(:,1,:))); %write the whole frame as not a number
+        continue; %skip this loop interation
+    end
+    
+    prevwc = d.ptop(1:d.markernum_top(1),ii-1,:); %postion of all previous frame white markers
+    prevbc = d.ptop(d.markernum_top(1)+1:end,ii-1,:); %postion of all previous frame black markers
+    
+    maskedim_white = overlaycirclemask(vid_top{ii},prevwc); %overlay mask on current frame from positions of white markers in previous frame 
+    maskedim_blk = overlaycirclemask(vid_top{ii},prevbc); %overlay mask on current frame from positions of black markers in previous frame 
+    
+    cw = imfindcircles(maskedim_white, rad_top, 'ObjectPolarity', 'bright','Sensitivity',sen_top); %get center of white circles in image
+    cb = imfindcircles(maskedim_blk, rad_top, 'ObjectPolarity', 'dark','Sensitivity',sen_top); %get center of black circles in image       
+    
+    try
+        cw = idcircles(cw,prevwc);%identify white circles
+        cb = idcircles(cb,prevbc);%identify black circles
+    
+    catch ME 
+        switch ME.identifier
+            %some circles are not visible
+            case 'MyComponent:notenoughmarkers'
+                disp(['Circles missing on CANON CAMERA at frame ' num2str(ii)]);
+                d.ptop(:,ii,:) = nan*ones(size(d.ptop(:,1,:))); %write the whole frame as not a number
+            %previous case was written all as nan
+            case 'MyComponenet:nullprevframe'
+                try
+                    d.ptop(:,ii,:) = usridcircles(vid_top,cw,cb,d.mtop); %get user to re-identify markers
+                catch ME
+                    switch ME.identifier
+                        %all circles are still no visible in frame
+                        case 'MyComponent:wrongframe'
+                             d.ptop(:,ii,:) = nan*ones(size(d.ptop(:,1,:))); %write the whole frame as not a number
+                             continue; %go to next iteration of loop
+                    end
+                end
+            %not expected error
+            otherwise
+                rethrow(ME); %rethrow exception
+        end
+    end
+end
+
+close(wb); %close progress bar
+
+%% remaining frame (webcam)
+
+wb = waitbar(0,'Analysing webcam frames...'); %start progress bar
+
+%loop through remaining frames
+for ii = 2:fnum
+    
+    waitbar(ii/fnum); %update progress bar
     
     %check if manipulation frame
     if isman(ii,manipulations)
@@ -302,7 +363,24 @@ for ii = 2:fnum
         end 
     end
 end
+
+close(wb); %close progress bar
         
+%% write data
         
-    
+%concatonate headers onto data
+data_side = [d.mside';num2cell(d.pside)]; 
+data_top = [d.mtop';num2cell(d.ptop)];
+data_web = [{'Cord1','Cord2','Cord3','Cord4','Cord5','Cord6'},num2cell(d.pweb)];
+
+%write data to files
+writematrix(data_side, [expname '_side.xls']);
+writematrix(data_top, [expname '_top.xls']);
+writematrix(data_web, [expname '_web.xls']);
+
+
+
+
+
+
 

@@ -2,7 +2,7 @@ function c = webfindcircles(image)
 %WEBFINDCIRCLES finds the circles in an image from the webcam and sorts it
 %by y value
 
-sen = .95; %sensitivity of circle find function;
+sen = .94; %sensitivity of circle find function;
 
 tic; %start timer
 %loop until valid
@@ -13,7 +13,7 @@ while true
         error('MyComponent:watchDog','Error. \nCircle find function in endless loop.');
     end
     
-    c = imfindcircles(image, [1 3], 'ObjectPolarity', 'bright','Sensitivity',sen);
+    c = imfindcircles(image, [25 35], 'ObjectPolarity', 'bright','Sensitivity',sen);
     
     %validate number
     if size(c,1) > 6
