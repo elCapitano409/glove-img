@@ -6,12 +6,14 @@ v = VideoReader(filename);                                  % create VideoReader
 w = v.Width;                                                % get width
 h = v.Height;                                               % get height
 d = v.Duration;                                             % get duration
-s = struct('cdata',zeros(h,w,3,'uint8'),'colormap',[]);     % struct to hold frames
+% s = struct('cdata',zeros(h,w,'uint8'),'colormap',[]);  % struct to hold frames
+s = cell(1,floor(v.Duration*v.FrameRate));
 k = 1;                                                      % initialize counter
 while hasFrame(v)                                           % while object has frame
    f = readFrame(v);                                       % read the frame
-   s(k).cdata = f; %  = imrotate(f,90);                    % rotate frame as needed
+%    s(k).cdata = rgb2gray(f); %  = imrotate(f,90);                    % rotate frame as needed
    %s(k).gdata = f(:,:,2);
+   s{k} = rgb2gray(f);
    k = k + 1;                                              % increment counter
    waitbar(v.CurrentTime/d)                                % update progress bar
 end

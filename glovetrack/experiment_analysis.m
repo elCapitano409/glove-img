@@ -5,21 +5,12 @@
 
 %% video import
 
-%generate file names
-expname = 'Task2_wrist_trial2'; %name of expirement
-vid_top_name = strcat(expname,'_top_trim');
-vid_side_name = strcat(expname,'_side_trim');
-vid_webcam_name = strcat(expname,'_web_trim');
+exp = 'Task2_wrist_trial2'; %expirement name
 
-%import videos as a cell array of greyscale frames
-vid_top = RGBstrut2grey(vid2struct(vid_top_name)); 
-vid_side = RGBstrut2grey(vid2struct(vid_side_name)); 
-vid_webcam = RGBstrut2grey(vid2struct(vid_webcam_name)); 
+close all; %close windows 
+clc; %clear command window
 
-% %get video resolutions
-% top_res = size(vid_top{1});
-% side_res = size(vid_side{1});
-% webcam_res = size(vid_webcam{1});
+load(exp); %load videos
 
 manipulations = getmanframes(); %get frames that were manipulated in the expirement
 
@@ -156,6 +147,8 @@ for ii = 1:2
         end
     end
 end
+
+
 
 %% sort identified circles
 

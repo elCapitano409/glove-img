@@ -22,7 +22,7 @@ for ii = 1:2
         startf = input(['Input the start timestamp of manipulation ' num2str(counter) ' (if there are no more manipulations input "N") FORMAT(min:sec): '],'s'); %get start timestamp
 
         %if no more manipulations
-        if strcmp(start,'N')
+        if strcmp(startf,'N')
             break;
         else
             endf = input(['Input the end timestamp of manipulation ' num2str(counter) ': '],'s'); %get end timestamp
