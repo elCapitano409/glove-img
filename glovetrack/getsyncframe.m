@@ -7,18 +7,20 @@ function sync = getsyncframe(gs)
 imnum = size(gs,2);
 
 % bw = cell(size(gs)); %cell array to hold black white frames
-m = cell(size(gs));%cell array to hold mask
 intensity = zeros(1,size(gs,2)); %vector to hold average light intensity
-
+%threshold = getsyncthreshold(gs{1}); %get threshold for mask
+threshold = 250;
 wb = waitbar(0,'Syncing video...');%start progress bar
 
 %loop through images
 for ii = 1:imnum
     
     waitbar(ii/imnum); %update progress bar
-    
-    m{ii} = gs{ii} >= getsyncthreshold(gs{1}); %mask that only shows pixels with intensity 250 or higher
-    intensity(ii) = mean2(m{ii}); %get mean intensity of mask
+    mask = gs{1}; %copy image to mask
+    mask(mask < threshold) = 0; %pixels less than threshold are made black
+    mask(mask >= threshold) = 1; %pixels greater than threshold are made white
+
+    intensity(ii) = mean2(mask); %get mean intensity of mask
 end
 
 

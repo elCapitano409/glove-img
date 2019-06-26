@@ -6,7 +6,13 @@ if sum(isnan(cprev)) ~= 0
     error('MyComponent:nullprevframe','Error. \nPrevious frame contains null values. Cannot sort using distances.');
 end
 
+cprev = reshape(cprev,size(cprev,1),size(cprev,3)); %reorganize cprev to be in same format as c 
+
+try
 dist = pdist2(c,cprev); %compute distances bewteen current and previous markers
+catch ME
+    disp('error');
+end
 csort = zeros(size(cprev)); 
 
 %if there is less than expected number of circles

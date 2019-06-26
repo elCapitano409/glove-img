@@ -34,8 +34,8 @@ for ii = 1:2
         
         %assumption that both cameras are 60 frames a second
         %add numerical values to array
-        m(counter,1) = (str2double(startf{1})*60 + str2double(startf{2}))*60; %convert minutes and seconds to frames
-        m(counter,2) = (str2double(endf{1})*60 + str2double(endf{2}))*60; %convert minutes and seconds to frames
+        m(counter,1) = (str2double(startf{1})*60 + str2double(startf{2}))*30; %convert minutes and seconds to frames
+        m(counter,2) = (str2double(endf{1})*60 + str2double(endf{2}))*30; %convert minutes and seconds to frames
         counter = counter+1; %increase counter by one
     end
     

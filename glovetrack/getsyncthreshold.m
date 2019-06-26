@@ -16,10 +16,19 @@ counter = 1; %counts amount of times loop was run
 
 %loops until broken
 while true
-    if y(maxhid - counter) <=local_min
-        t = x(maxhid - counter); %set threshold as x value of local min
-        break;
+    try
+        if y(maxhid - counter) <=local_min
+            t = x(maxhid - counter); %set threshold as x value of local min
+            break;
+        end
+    catch ME
+        if strcmp(ME.identifier,'MATLAB:badsubscript')
+            t = 250;
+        else
+            rethrow(ME);
+        end
     end
+   
     counter = counter+1; %increase counter by one
 end
 end
