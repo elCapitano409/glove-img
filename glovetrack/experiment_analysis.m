@@ -1,13 +1,18 @@
 %{
 %EXPERIMENT_ANALYSIS.m
 %Kyle Inzunza
-%} 
+%}
 
 %% video import
 
 exp = 'Task2_wrist_trial2'; %expirement name
 
-close all; %close windows 
+%close all waitbars if they exsists
+try
+    delete(findall(0));
+catch
+end
+close all; %close windows
 clc; %clear command window
 
 disp('Loading videos...');
@@ -67,8 +72,8 @@ for ii = 1:wmarker_num
         %has not been input before
         if sum(ismember(wmarkerid_side,temp)) ~= 0
             disp('ID has alread been input.');
-        %is an integer
-        %is within the bounds    
+            %is an integer
+            %is within the bounds
         elseif floor(temp) == temp && temp <= size(c_side_w,1) && temp > 0
             wmarkerid_side(ii) = temp; %record circle index
             wmarkername_side{ii} = input('Marker name: ','s'); %get model id for that circle
@@ -80,18 +85,17 @@ for ii = 1:wmarker_num
 end
 
 %black markers
-%TODO: preallocate memory then truncate
 printcircles(vid_side{1}, c_side_b); %print circles to user
-k = 1; %counts how many origins have been input 
-origin_side_name = {}; %cell array to hold names
-origin_side = []; %array to hold origin coordinates
+k = 1; %counts how many origins have been input
+origin_side_name = cell(1,2); %cell array to hold names
+origin_side = zeros(2); %array to hold origin coordinates
 for ii = 1:2
     %loop until valid
     while true
         temp = input(['Circle of O' num2str(ii - 1) ' (if not visible/not being tracked type 0): ']);
         if temp == 0
             break; %end loop
-        %check if input valid
+            %check if input valid
         elseif floor(temp) == temp && temp <= size(c_side_b,1) && temp > 0
             origin_side(k,:) = c_side_b(temp,:); %record origin coordinates
             origin_side_name{k} = ['O' num2str(ii - 1)]; %record origin name
@@ -103,9 +107,13 @@ for ii = 1:2
     end
 end
 
+%truncate unused parts of arrays
+origin_side(origin_side == 0) = [];
+origin_side_name(cellfun(@isempty,origin_side_name)) = [];
+
 
 %% circle identification top view
-                                                       
+
 %find circles in frame 1
 %radii and sensitivity has to be manually calibrated
 rad_top = [14,20];
@@ -128,8 +136,8 @@ for ii = 1:wmarker_num
         %has not been input before
         if sum(ismember(wmarkerid_top,temp)) ~= 0
             disp('ID has alread been input.');
-        %is an integer
-        %is within the bounds
+            %is an integer
+            %is within the bounds
         elseif floor(temp) == temp && temp <= size(c_top_w,1) && temp > 0
             wmarkerid_top(ii) = temp; %record circle index
             wmarkername_top{ii} = input('Marker name: ','s'); %get model id for that circle
@@ -142,16 +150,16 @@ end
 
 %black markers
 printcircles(vid_top{1}, c_top_b); %print circles to user
-k = 1; %counts how many origins have been input 
-origin_top_name = {}; %cell array to hold names
-origin_top = []; %array to hold origin coordinates
+k = 1; %counts how many origins have been input
+origin_top_name = cell(1,2); %cell array to hold names
+origin_top = zeros(2); %array to hold origin coordinates
 for ii = 1:2
     %loop until valid
     while true
         temp = input(['Circle of O' num2str(ii - 1) ' (if not visible/not being tracked type 0): ']);
         if temp == 0
             break; %end loop
-        %check if input valid
+            %check if input valid
         elseif floor(temp) == temp && temp <= size(c_side_b,1) && temp > 0
             origin_top(k,:) = c_side_b(temp,:); %record origin coordinates
             origin_top_name{k} = ['O' num2str(ii - 1)]; %record origin name
@@ -163,6 +171,9 @@ for ii = 1:2
     end
 end
 
+%truncate unused parts of arrays
+origin_top(origin_top == 0) = [];
+origin_top_name(cellfun(@isempty,origin_top_name)) = [];
 
 
 %% sort identified circles
@@ -175,39 +186,21 @@ end
 %pweb -> position webcam -> (circle,frame,xy)
 % d = struct('ptop', zeros(size(wmarkerid_top, 1) + sum(origin_top ~= 0), fnum,2), 'mtop', cell(1, size(wmarkerid_top,1) + sum(origin_top ~= 0)),...
 %     'pside', zeros(size(wmarkerid_side, 1) + sum(origin_side ~= 0), fnum,2), 'mside', cell(1, size(wmarkerid_side, 1)+ sum(origin_side ~= 0)),...
-%     'pweb', zeros(6, fnum, 2)); 
+%     'pweb', zeros(6, fnum, 2));
 
 %new data structure initialization
 d = struct('ptop', zeros(size(wmarkerid_top, 1) + size(origin_top,1), fnum,2), 'mtop',[],'markernum_top', [size(wmarkerid_top,1), size(origin_top,1)],...
     'pside', zeros(size(wmarkerid_side, 1) + size(origin_side,1), fnum,2), 'mside',[],'markernum_side', [size(wmarkerid_side,1), size(origin_top,1)],...
-    'pweb', zeros(6, fnum, 2)); 
+    'pweb', zeros(6, fnum, 2));
 
 
 %populate map arrays
-
-
-
-
-
-% %cell array to store origin names
-% originname_top = {'O0';'O1'};
-% originname_side = {'O0';'O1'};
-% 
-% %indices of origins that don't exist
-% delete_o_side = find(origin_side == 0);
-% delete_o_top = find(origin_top == 0);
-% 
-% %delete elements at indices
-% originname_side(delete_o_side) = [];
-% originname_top(delete_o_top) = [];
-% origin_side(delete_o_side) = [];
-% origin_top(delete_o_top) = [];
 
 %vertically concatonate the arrays
 d.mside = [wmarkername_side;origin_side_name'];
 d.mtop = [wmarkername_top;origin_top_name'];
 
-%populate first frame of position data 
+%populate first frame of position data
 
 %loop through white markers
 for ii = 1:d.markernum_side(1)
@@ -250,37 +243,60 @@ for ii = 2:fnum
     prevwc = d.pside(1:d.markernum_side(1),ii-1,:); %postion of all previous frame white markers
     prevbc = d.pside(d.markernum_side(1)+1:end,ii-1,:); %postion of all previous frame black markers
     
-    maskedim_white = overlaycirclemask(vid_side{ii},prevwc); %overlay mask on current frame from positions of white markers in previous frame 
-    maskedim_blk = overlaycirclemask(vid_side{ii},prevbc); %overlay mask on current frame from positions of black markers in previous frame 
-    
-    cw = imfindcircles(maskedim_white, rad_side, 'ObjectPolarity', 'bright','Sensitivity',sen_side); %get center of white circles in image
-    cb = imfindcircles(maskedim_blk, rad_side, 'ObjectPolarity', 'dark','Sensitivity',sen_side); %get center of black circles in image       
-    
-    try
-        cw = idcircles(cw,prevwc);%identify white circles
-        cb = idcircles(cb,prevbc);%identify black circles
-    
-    catch ME 
-        switch ME.identifier
-            %some circles are not visible
-            case 'MyComponent:notenoughmarkers'
-                disp(['Circles missing on IONCAMERA at frame ' num2str(ii)]);
-                d.pside(:,ii,:) = nan*ones(size(d.pside(:,1,:))); %write the whole frame as not a number
-            %previous case was written all as nan
-            case 'MyComponenet:nullprevframe'
-                try
-                    d.pside(:,ii,:) = usridcircles(vid_side,cw,cb,d.mside); %get user to re-identify markers
-                catch ME
-                    switch ME.identifier
-                        %all circles are still no visible in frame
-                        case 'MyComponent:wrongframe'
-                             d.pside(:,ii,:) = nan*ones(size(d.pside(:,1,:))); %write the whole frame as not a number
-                             continue; %go to next iteration of loop
+    %if previous frame contained NaN
+    if sum(sum(isnan(prevwc))) ~= 0 || sum(sum(isnan(prevbc))) ~= 0
+        try
+            cw = imfindcircles(vid_side{ii}, rad_side, 'ObjectPolarity', 'bright','Sensitivity',sen_side); %get center of white circles in image
+            cb = imfindcircles(vid_side{ii}, rad_side, 'ObjectPolarity', 'dark','Sensitivity',sen_side); %get center of black circles in image
+            
+            d.pside(:,ii,:) = usridcircles(vid_side{ii},cw,cb,d.mside); %get user to re-identify markers
+        catch ME
+            switch ME.identifier
+                %all circles are still not visible in frame
+                case 'MyComponent:wrongframe'
+                    d.pside(:,ii,:) = nan*ones(size(d.pside(:,1,:))); %write the whole frame as not a number
+                    continue; %go to next iteration of loop
+                otherwise 
+                    rethrow(ME);
+            end
+        end
+    else
+        maskedim_white = overlaycirclemask(vid_side{ii},prevwc); %overlay mask on current frame from positions of white markers in previous frame
+        maskedim_blk = overlaycirclemask(vid_side{ii},prevbc); %overlay mask on current frame from positions of black markers in previous frame
+        
+        cw = imfindcircles(maskedim_white, rad_side, 'ObjectPolarity', 'bright','Sensitivity',sen_side); %get center of white circles in image
+        cb = imfindcircles(maskedim_blk, rad_side, 'ObjectPolarity', 'dark','Sensitivity',sen_side); %get center of black circles in image
+        
+        try
+            cw = idcircles(cw,prevwc);%identify white circles
+            cb = idcircles(cb,prevbc);%identify black circles
+            
+            d.pside(:,ii,:) = [cw;cb]; %save circle positions
+            
+        catch ME
+            switch ME.identifier
+                %some circles are not visible
+                case 'MyComponent:notenoughmarkers'
+                    disp(['Circles missing on IONCAMERA at frame ' num2str(ii)]);
+                    d.pside(:,ii,:) = nan*ones(size(d.pside(:,1,:))); %write the whole frame as not a number
+                    %previous case was written all as nan
+                case 'MyComponenet:nullprevframe'
+                    try
+                        d.pside(:,ii,:) = usridcircles(vid_side{ii},cw,cb,d.mside); %get user to re-identify markers
+                    catch ME
+                        switch ME.identifier
+                            %all circles are still no visible in frame
+                            case 'MyComponent:wrongframe'
+                                d.pside(:,ii,:) = nan*ones(size(d.pside(:,1,:))); %write the whole frame as not a number
+                                continue; %go to next iteration of loop
+                            otherwise
+                                rethrow(ME);
+                        end
                     end
-                end
-            %not expected error
-            otherwise
-                rethrow(ME); %rethrow exception
+                    %not expected error
+                otherwise
+                    rethrow(ME); %rethrow exception
+            end
         end
     end
 end
@@ -306,37 +322,57 @@ for ii = 2:fnum
     prevwc = d.ptop(1:d.markernum_top(1),ii-1,:); %postion of all previous frame white markers
     prevbc = d.ptop(d.markernum_top(1)+1:end,ii-1,:); %postion of all previous frame black markers
     
-    maskedim_white = overlaycirclemask(vid_top{ii},prevwc); %overlay mask on current frame from positions of white markers in previous frame 
-    maskedim_blk = overlaycirclemask(vid_top{ii},prevbc); %overlay mask on current frame from positions of black markers in previous frame 
-    
-    cw = imfindcircles(maskedim_white, rad_top, 'ObjectPolarity', 'bright','Sensitivity',sen_top); %get center of white circles in image
-    cb = imfindcircles(maskedim_blk, rad_top, 'ObjectPolarity', 'dark','Sensitivity',sen_top); %get center of black circles in image       
-    
-    try
-        cw = idcircles(cw,prevwc);%identify white circles
-        cb = idcircles(cb,prevbc);%identify black circles
-    
-    catch ME 
-        switch ME.identifier
-            %some circles are not visible
-            case 'MyComponent:notenoughmarkers'
-                disp(['Circles missing on CANON CAMERA at frame ' num2str(ii)]);
-                d.ptop(:,ii,:) = nan*ones(size(d.ptop(:,1,:))); %write the whole frame as not a number
-            %previous case was written all as nan
-            case 'MyComponenet:nullprevframe'
-                try
-                    d.ptop(:,ii,:) = usridcircles(vid_top,cw,cb,d.mtop); %get user to re-identify markers
-                catch ME
-                    switch ME.identifier
-                        %all circles are still no visible in frame
-                        case 'MyComponent:wrongframe'
-                             d.ptop(:,ii,:) = nan*ones(size(d.ptop(:,1,:))); %write the whole frame as not a number
-                             continue; %go to next iteration of loop
+    %if previous frame contained NaN
+    if sum(sum(isnan(prevwc))) ~= 0 || sum(sum(isnan(prevbc))) ~= 0
+        try
+            cw = imfindcircles(vid_top{ii}, rad_top, 'ObjectPolarity', 'bright','Sensitivity',sen_top); %get center of white circles in image
+            cb = imfindcircles(vid_top{ii}, rad_top, 'ObjectPolarity', 'dark','Sensitivity',sen_top); %get center of black circles in image
+            
+            d.ptop(:,ii,:) = usridcircles(vid_side,cw,cb,d.mtop); %get user to re-identify markers
+        catch ME
+            switch ME.identifier
+                %all circles are still not visible in frame
+                case 'MyComponent:wrongframe'
+                    d.ptop(:,ii,:) = nan*ones(size(d.ptop(:,1,:))); %write the whole frame as not a number
+                    continue; %go to next iteration of loop
+            end
+        end
+    else
+        
+        maskedim_white = overlaycirclemask(vid_top{ii},prevwc); %overlay mask on current frame from positions of white markers in previous frame
+        maskedim_blk = overlaycirclemask(vid_top{ii},prevbc); %overlay mask on current frame from positions of black markers in previous frame
+        
+        cw = imfindcircles(maskedim_white, rad_top, 'ObjectPolarity', 'bright','Sensitivity',sen_top); %get center of white circles in image
+        cb = imfindcircles(maskedim_blk, rad_top, 'ObjectPolarity', 'dark','Sensitivity',sen_top); %get center of black circles in image
+        
+        try
+            cw = idcircles(cw,prevwc);%identify white circles
+            cb = idcircles(cb,prevbc);%identify black circles
+            
+            d.ptop(:,ii,:) = [cw;cb]; %save circle positions
+            
+        catch ME
+            switch ME.identifier
+                %some circles are not visible
+                case 'MyComponent:notenoughmarkers'
+                    disp(['Circles missing on CANON CAMERA at frame ' num2str(ii)]);
+                    d.ptop(:,ii,:) = nan*ones(size(d.ptop(:,1,:))); %write the whole frame as not a number
+                    %previous case was written all as nan
+                case 'MyComponenet:nullprevframe'
+                    try
+                        d.ptop(:,ii,:) = usridcircles(vid_top{ii},cw,cb,d.mtop); %get user to re-identify markers
+                    catch ME
+                        switch ME.identifier
+                            %all circles are still no visible in frame
+                            case 'MyComponent:wrongframe'
+                                d.ptop(:,ii,:) = nan*ones(size(d.ptop(:,1,:))); %write the whole frame as not a number
+                                continue; %go to next iteration of loop
+                        end
                     end
-                end
-            %not expected error
-            otherwise
-                rethrow(ME); %rethrow exception
+                    %not expected error
+                otherwise
+                    rethrow(ME); %rethrow exception
+            end
         end
     end
 end
@@ -372,16 +408,16 @@ for ii = 2:fnum
                 imshow(vid_web{ii}); %display current frame
             otherwise
                 rethrow(ME); %error was not resolved
-        end 
+        end
     end
 end
 
 close(wb); %close progress bar
-        
+
 %% write data
-        
+
 %concatonate headers onto data
-data_side = [d.mside';num2cell(d.pside)]; 
+data_side = [d.mside';num2cell(d.pside)];
 data_top = [d.mtop';num2cell(d.ptop)];
 data_web = [{'Cord1','Cord2','Cord3','Cord4','Cord5','Cord6'},num2cell(d.pweb)];
 

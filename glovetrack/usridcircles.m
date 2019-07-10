@@ -22,6 +22,8 @@ for ii = 1:cnum
                 error('MyComponent:wrongframe','Error.\nNot all circles visible in this frame.');
             end
             
+            index = str2double(index); %convert string into number
+            
             %is an integer
             %is within the bounds
             if floor(index) == index && index <= size(cw,1) && index > 0
@@ -44,7 +46,7 @@ printcircles(image, cb); %print black circles to user
 %loop through number of circles being tracked
 for ii = 1:cnum
     %check if O1 or O2 (only black markers)
-    if strcmp(cname{ii},'O1') || strcmp(cname{ii},'O2')
+    if strcmp(cname{ii},'O0') || strcmp(cname{ii},'O0')
         %loop until valid
         while true
             index = input(['Input the ID of marker ' cname{ii} ': (if it is not visible in frame type "N"): ']);

@@ -5,23 +5,10 @@ function image = overlaycirclemask(image,c)
 
 mask = zeros(h,w); % blank mask
 
-r = 50; %radius of area
+
+r = 70; %radius of area
 cnum = size(c,1); %number of circles
 c = reshape(c,cnum,2); %change array from 3d to 2d
-
-% %generate square mask of circle
-% circmatrix = ones(r*2);
-
-% %loop through rows
-% for ii = 1:r*2
-%     %loop through columns
-%     for jj = 1:r*2
-%         %if outside circle radius
-%         if sqrt((ii-r)^2 + (jj-r)^2) > r
-%             circmatrix(ii,jj) = 0; %make area black
-%         end
-%     end
-% end
 
 %loop through circles
 for ii = 1:cnum
@@ -30,10 +17,6 @@ for ii = 1:cnum
     x = [center(1)-r+1,center(1)+r]; %x indices
     y = [center(2)-r+1,center(2)+r]; %y indices
 
-%     %indices of circle matrix to be called
-%     xm = [1,100];
-%     ym = [1,100];
-    
     %adjusts indices to avoid out of bounds
     if y(1) < 1
         y(1) = 1;
@@ -51,9 +34,11 @@ for ii = 1:cnum
         x(2) = w;
 %         xm(2) = center(1)+r - w;
     end  
-%   mask(y(1):y(2),x(1):x(2)) = circmatrix(ym(1):ym(2),xm(1):xm(2)); %add partial circle to matrix
-    
+    try
     mask(y(1):y(2),x(1):x(2)) = 1; %mask specific area
+    catch ME
+        disp("Error");
+    end
 
 end
 
