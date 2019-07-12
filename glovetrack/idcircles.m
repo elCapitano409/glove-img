@@ -1,4 +1,4 @@
-function csort = idcircles(c,cprev)
+function csort = idcircles(c,cprev,cnum)
 %IDCIRCLES uses distances from previous frame to id current circle
 
 %check if previous frame contains NaN values
@@ -7,7 +7,7 @@ if sum(isnan(cprev)) ~= 0
 end
 
 %if there is less than expected number of circles
-if size(c,1) < size(cprev,1)
+if size(c,1) < cnum
     error('MyComponent:notenoughmarkers','Error. \nMissing markers');
 end
 

@@ -456,7 +456,7 @@ for ii = 2:fnum
                 %some circles are not visible
                 case 'MyComponent:notenoughmarkers'
                     disp(['Circles missing on IONCAMERA at frame ' num2str(ii)]);
-                    d.ptop(:,ii,:) = nan*ones(size(d.ptop(:,1,:))); %write the whole frame as not a number
+                    d.pside(:,ii,:) = nan*ones(size(d.pside(:,1,:))); %write the whole frame as not a number
                 %previous case was written all as nan
                 case 'MyComponent:nullprevframe'
                     disp("Error. \nProblem with if statement.");%if this error was thrown it passed the if statment that should stop nan values
@@ -470,15 +470,15 @@ for ii = 2:fnum
         usr_id_mode = true; %turn on user id mode
         missing_counter = 0; %reset missing counter
         try
-            cw = imfindcircles(vid_top{ii}, rad_top, 'ObjectPolarity', 'bright','Sensitivity',sen_top); %get center of white circles in image
-            cb = imfindcircles(vid_top{ii}, rad_top, 'ObjectPolarity', 'dark','Sensitivity',sen_top); %get center of black circles in image
+            cw = imfindcircles(vid_side{ii}, rad_side, 'ObjectPolarity', 'bright','Sensitivity',sen_side); %get center of white circles in image
+            cb = imfindcircles(vid_side{ii}, rad_side, 'ObjectPolarity', 'dark','Sensitivity',sen_side); %get center of black circles in image
             
-            d.ptop(:,ii,:) = usridcircles(vid_top{ii},cw,cb,d.mtop); %get user to re-identify markers
+            d.pside(:,ii,:) = usridcircles(vid_side{ii},cw,cb,d.mside); %get user to re-identify markers
         catch ME
             switch ME.identifier
                 %all circles are still not visible in frame
                 case 'MyComponent:wrongframe'
-                    d.ptop(:,ii,:) = nan*ones(size(d.ptop(:,1,:))); %write the whole frame as not a number
+                    d.pside(:,ii,:) = nan*ones(size(d.pside(:,1,:))); %write the whole frame as not a number
                     skip_mode = true; %turn on skip mode to skip next n frames
                     continue; %go to next iteration of loop
                 otherwise
