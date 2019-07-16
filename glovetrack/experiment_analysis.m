@@ -160,16 +160,23 @@ for ii = 1:2
         if temp == 0
             break; %end loop
             %check if input valid
-        elseif floor(temp) == temp && temp <= size(c_side_b,1) && temp > 0
-            origin_top(k,:) = c_side_b(temp,:); %record origin coordinates
+        elseif floor(temp) == temp && temp <= size(c_top_b,1) && temp > 0
+            origin_top(k,:) = c_top_b(temp,:); %record origin coordinates
             origin_top_name{k} = ['O' num2str(ii - 1)]; %record origin name
             k = k + 1; %increase counter
+            
+            c_num_blk = size(c_top_b,1); %get number of black circles
+            c_top_b(temp,:) = []; %delete element from array
+            c_top_b = reshape(c_top_b,c_num_blk - 1,2); %reshape to account for deleted element
+           
             break; %end loop
         else
             disp('Input invalid, try again.');
         end
     end
 end
+
+ignorec = c_top_b; %array of circles that are to be ignored
 
 %truncate unused parts of arrays
 origin_top(origin_top == 0) = [];
@@ -224,6 +231,7 @@ end
 
 d.pweb(:,1,:) = webfindcircles(vid_web{1}); %write webcam marker position for initial frame
 
+close all; %close open figures
 
 %% remaining frames (side)
 
@@ -362,6 +370,7 @@ for ii = 2:fnum
 end
 
 close(wb); %close progress bar
+close all; %close open figures
 
 
 %% remaining frames (top)
@@ -399,7 +408,9 @@ for ii = 2:fnum
         maskedim_blk = overlaycirclemask(vid_top{ii},prevbc); %overlay mask on current frame from positions of black markers in previous frame
         
         cw = imfindcircles(maskedim_white, rad_top, 'ObjectPolarity', 'bright','Sensitivity',sen_top); %get center of white circles in image
-        cb = imfindcircles(maskedim_blk, rad_top, 'ObjectPolarity', 'dark','Sensitivity',sen_top + 0.02); %get center of black circles in image
+        cb = imfindcircles(maskedim_blk, rad_top, 'ObjectPolarity', 'dark','Sensitivity',sen_top + 0.03); %get center of black circles in image
+        
+        cb = deletecircles(cb, ignorec); %get rid of any optical table dots
         
         try
             cw = idcircles(cw,prevwc,d.markernum_top(1));%identify white circles
@@ -411,7 +422,7 @@ for ii = 2:fnum
             switch ME.identifier
                 %some circles are not visible
                 case 'MyComponent:notenoughmarkers'
-                    disp(['Circles missing on IONCAMERA at frame ' num2str(ii)]);
+                    disp(['Circles missing on CANON at frame ' num2str(ii)]);
                     d.ptop(:,ii,:) = nan*ones(size(d.ptop(:,1,:))); %write the whole frame as not a number
                     missing_counter = missing_counter + 1;
                 
@@ -455,7 +466,7 @@ for ii = 2:fnum
             switch ME.identifier
                 %some circles are not visible
                 case 'MyComponent:notenoughmarkers'
-                    disp(['Circles missing on IONCAMERA at frame ' num2str(ii)]);
+                    disp(['Circles missing on CANON at frame ' num2str(ii)]);
                     d.ptop(:,ii,:) = nan*ones(size(d.ptop(:,1,:))); %write the whole frame as not a number
                 %previous case was written all as nan
                 case 'MyComponent:nullprevframe'

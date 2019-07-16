@@ -1,6 +1,19 @@
 function csort = idcircles(c,cprev,cnum)
 %IDCIRCLES uses distances from previous frame to id current circle
 
+%loop through all new circles
+for ii = size(c,1)
+    %if there the set of coordiate is not unique
+    try
+    if sum(sum(c(ii,:) == c)) > 2 && sum(size(c) == [0 0]) ~= 0
+        error('MyComponent:doublemarker','Error. \nMarker has been identified as two seperate circles.');
+    end
+    catch ME
+        disp("yeet in idcircles.m");
+    end
+end
+
+
 %check if previous frame contains NaN values
 if sum(isnan(cprev)) ~= 0
     error('MyComponent:nullprevframe','Error. \nPrevious frame contains null values. Cannot sort using distances.');
