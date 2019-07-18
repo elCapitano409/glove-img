@@ -281,8 +281,15 @@ for ii = 2:fnum
         cb = imfindcircles(maskedim_blk, rad_side, 'ObjectPolarity', 'dark','Sensitivity',sen_side + 0.02); %get center of black circles in image
         
         try
+            if ~isuniquecircles(cw) || ~isuniquecircles(cb) %if circles were not unique
+                error("certified bruh moment");
+            end
             cw = idcircles(cw,prevwc,d.markernum_side(1));%identify white circles
             cb = idcircles(cb,prevbc,d.markernum_side(2));%identify black circles
+            
+            if ~isuniquecircles(cw) || ~isuniquecircles(cb) %if circles were not unique
+                error("BRUH");
+            end
             
             d.pside(:,ii,:) = [cw;cb]; %save circle positions
             
