@@ -7,7 +7,7 @@
 
 exp = 'Task2_wrist_trial2'; %expirement name
 
-%close all waitbars if they exsist
+%closNe all waitbars if they exsist
 try
     delete(findall(0));
 catch
@@ -244,12 +244,15 @@ missing_limit = 5; %max amount of attempts to reid missing circles
 
 usr_id_mode = false; %if the user needs to re-identify the frames
 
+white_offset = d.markernum_side(1); %amount the index needs to be offset to pass all white markers
+
 wb = waitbar(0,'Analysing ION CAMERA frames...'); %start progress bar
 
-
+tic;
 %loop through remaining frames
 for ii = 2:fnum
     waitbar(ii/fnum); %update progress bar
+    image = vid_side{ii}; %store image
     
     %check if frame needs to be skipped
     if skip_mode && skip_counter < frame_skip
@@ -271,46 +274,66 @@ for ii = 2:fnum
     prevwc = d.pside(1:d.markernum_side(1),ii-1,:); %postion of all previous frame white markers
     prevbc = d.pside(d.markernum_side(1)+1:end,ii-1,:); %postion of all previous frame black markers
     
+    
     %if previous frame contained doens't contain NaN
     if sum(sum(isnan(prevwc))) == 0 && sum(sum(isnan(prevbc))) == 0
-        
-        maskedim_white = overlaycirclemask(vid_side{ii},prevwc); %overlay mask on current frame from positions of white markers in previous frame
-        maskedim_blk = overlaycirclemask(vid_side{ii},prevbc); %overlay mask on current frame from positions of black markers in previous frame
-        
-        cw = imfindcircles(maskedim_white, rad_side, 'ObjectPolarity', 'bright','Sensitivity',sen_side); %get center of white circles in image
-        cb = imfindcircles(maskedim_blk, rad_side, 'ObjectPolarity', 'dark','Sensitivity',sen_side + 0.02); %get center of black circles in image
-        
-        try
-            if ~isuniquecircles(cw) || ~isuniquecircles(cb) %if circles were not unique
-                error("certified bruh moment");
-            end
-            cw = idcircles(cw,prevwc,d.markernum_side(1));%identify white circles
-            cb = idcircles(cb,prevbc,d.markernum_side(2));%identify black circles
-            
-            if ~isuniquecircles(cw) || ~isuniquecircles(cb) %if circles were not unique
-                error("BRUH");
-            end
-            
-            d.pside(:,ii,:) = [cw;cb]; %save circle positions
-            
-        catch ME
-            switch ME.identifier
-                %some circles are not visible
-                case 'MyComponent:notenoughmarkers'
-                    disp(['Circles missing on IONCAMERA at frame ' num2str(ii)]);
-                    d.pside(:,ii,:) = nan*ones(size(d.pside(:,1,:))); %write the whole frame as not a number
-                    missing_counter = missing_counter + 1;
-                
-                %previous case was written all as nan
-                case 'MyComponenet:nullprevframe'
-                    disp("Error. \nProblem with if statement.");%if this error was thrown it passed the if statment that should stop nan values
-                    rethrow(ME);
-                    
-                 %not expected error
-                otherwise
-                    rethrow(ME); %rethrow exception
+        %loop through previous white circles
+        for jj = 1:size(prevwc,1)
+            try
+            d.pside(jj,ii,:) = idcircle1(reshape(prevwc(jj,:,:),1,2),image,rad_side,sen_side,"bright"); %find same marker and write to d
+            catch ME
+                disp("reee");
             end
         end
+        
+        %loop through previous black circles
+        for jj = 1:size(prevbc,1)
+            try
+            d.pside(jj + white_offset,ii,:) = idcircle1(reshape(prevbc(jj,:),1,2),image,rad_side,sen_side,"dark"); %find same marker and write to d
+            catch ME
+                disp("reee");
+            end
+        end
+        
+        
+        
+%         maskedim_white = overlaycirclemask(vid_side{ii},prevwc); %overlay mask on current frame from positions of white markers in previous frame
+%         maskedim_blk = overlaycirclemask(vid_side{ii},prevbc); %overlay mask on current frame from positions of black markers in previous frame
+%         
+%         cw = imfindcircles(maskedim_white, rad_side, 'ObjectPolarity', 'bright','Sensitivity',sen_side); %get center of white circles in image
+%         cb = imfindcircles(maskedim_blk, rad_side, 'ObjectPolarity', 'dark','Sensitivity',sen_side + 0.02); %get center of black circles in image
+%         
+%         try
+%             if ~isuniquecircles(cw) || ~isuniquecircles(cb) %if circles were not unique
+%                 error("certified bruh moment");
+%             end
+%             cw = idcircles(cw,prevwc,d.markernum_side(1));%identify white circles
+%             cb = idcircles(cb,prevbc,d.markernum_side(2));%identify black circles
+%             
+%             if ~isuniquecircles(cw) || ~isuniquecircles(cb) %if circles were not unique
+%                 error("BRUH");
+%             end
+%             
+%             d.pside(:,ii,:) = [cw;cb]; %save circle positions
+%             
+%         catch ME
+%             switch ME.identifier
+%                 %some circles are not visible
+%                 case 'MyComponent:notenoughmarkers'
+%                     disp(['Circles missing on IONCAMERA at frame ' num2str(ii)]);
+%                     d.pside(:,ii,:) = nan*ones(size(d.pside(:,1,:))); %write the whole frame as not a number
+%                     missing_counter = missing_counter + 1;
+%                 
+%                 %previous case was written all as nan
+%                 case 'MyComponenet:nullprevframe'
+%                     disp("Error. \nProblem with if statement.");%if this error was thrown it passed the if statment that should stop nan values
+%                     rethrow(ME);
+%                     
+%                  %not expected error
+%                 otherwise
+%                     rethrow(ME); %rethrow exception
+%             end
+%         end
         
     elseif missing_counter <= missing_limit && ~usr_id_mode %if the program needs to reid missing circles 
         missing_counter = missing_counter + 1; %add one to missing counter
