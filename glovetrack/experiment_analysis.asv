@@ -67,6 +67,10 @@ sen_side = 0.95;
 c_side_w = imfindcircles(vid_side{1}, rad_side, 'ObjectPolarity', 'bright','Sensitivity',sen_side);
 c_side_b = imfindcircles(vid_side{1}, rad_side, 'ObjectPolarity', 'dark','Sensitivity',sen_side);
 
+%polarity constants
+DARK = 0;
+BRIGHT = 1;
+
 %white markers
 printcircles(vid_side{1}, c_side_w); %print circles to user
 wmarker_num = input('How many white markers are being tracked: ');
@@ -271,11 +275,10 @@ for ii = 2:fnum %loop through remaining frames
     image = vid_side{ii}; %store image
     
     for jj = 1:wnum %loop through white markers
-        d.pside(jj,ii,:) = idblob(image, prevwc(jj,:,:),'bright',tw);
+        d.pside(jj,ii,:) = idblob(image, prevwc(jj,:,:),BRIGHT,tw);
     end
     
     for jj = 1:bnum %loop through black markers
-        d.pside(jj + wnum,ii,:) = idblob(image, prevbc(jj,:,:),'dark',tb);
     end
     
 end
