@@ -3,7 +3,7 @@ function printcircles(frame,c)
 %it
 
 cnum = size(c,1); %get number of circles;
-r = 2.5*ones(1,cnum);
+r = 2 * ones(1,cnum);
 
 imshow(frame); %display image
 viscircles(c,r,'Color','b'); %display circles
