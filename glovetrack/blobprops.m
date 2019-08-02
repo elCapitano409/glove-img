@@ -9,7 +9,7 @@ for ii = 1:2 %loop twice for both polarities
     end
     
     %fill holes
-    mask = imfill(mask, 'holes');
+    %mask = imfill(mask, 'holes');
     mask = bwareaopen(mask, 6);
     
     s = regionprops(mask,'centroid','area'); %find centroid and area
