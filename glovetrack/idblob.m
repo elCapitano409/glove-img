@@ -1,4 +1,4 @@
-function c = idblob(image,prev,pol,t,al)
+function c = idblob(image,prev,al)
 %IDBLOB matches blob in image to previous coordinat
 
 savedim = image; % delete later 
@@ -7,17 +7,7 @@ step = 5; %amount to change threshold
 prev = reshape(prev,1,2); %reshape prev to handle
 image = overlaycirclemask(image,prev); %mask around radius of last known location of marker
 
-if strcmpi(pol,'dark') %if searching for blk circles
-    image(image == 0) = 255; %swap color of background
-    mask = image < t; %mask image from threshold
-    polarity = 0;
-elseif strcmpi(pol,'bright') %if searching for wht circles
-    mask = image > t; %mask image from threshold
-    polarity = 1;
-else %if niether blk or wht circles
-    error("MyComponent:InvalidArguments", "Error. \nInvalid polarity argument.");
-end
-
+mask = rgbmask(image,'b'); %isolate blue
 mask = bwareaopen(mask, 6); %fill all holes less than 6 px
 
 while true %loop until broken
