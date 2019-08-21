@@ -5,7 +5,6 @@ wb = waitbar(0,'Loading the file...');                      % show progress bar
 v = VideoReader(filename);                                  % create VideoReader object
 
 d = v.Duration;                                             % get duration
-% s = struct('cdata',zeros(h,w,'uint8'),'colormap',[]);  % struct to hold frames
 s = cell(1,floor(v.Duration*v.FrameRate));
 k = 1;                                                      % initialize counter
 while hasFrame(v)                                           % while object has frame

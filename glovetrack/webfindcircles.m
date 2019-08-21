@@ -2,7 +2,8 @@ function c = webfindcircles(image)
 %WEBFINDCIRCLES finds the circles in an image from the webcam and sorts it
 %by y value
 
-sen = .94; %sensitivity of circle find function;
+sen = .94; %sensitivity of circle find function
+rad = [25,35];
 
 tic; %start timer
 %loop until valid

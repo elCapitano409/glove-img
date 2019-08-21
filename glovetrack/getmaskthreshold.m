@@ -1,10 +1,10 @@
 function t = getmaskthreshold(image,pol)
 %GETMASKTHRESHOLD prompts user to get proper threshold to mask images
 
-if strcmpi(pol,'dark') %if dark polarity
+if strcmpi(pol,'dark') || pol == 0 %if dark polarity
     t = 30; %start low
     polarity = 0;
-elseif strcmpi(pol,'bright') %if light polarity
+elseif strcmpi(pol,'bright') || pol == 1 %if light polarity
     t = 200; %start high
     polarity = 1;
 else

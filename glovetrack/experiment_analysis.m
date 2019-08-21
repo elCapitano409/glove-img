@@ -48,16 +48,19 @@ vid_web = vid_web(sync_webcam:end);
 
 fnum = min([size(vid_top,2),size(vid_side,2),size(vid_web,2)]); %the shortest video's frame number is used for the global frame number
 
-% %calibrate mask thresholds
-% thres_side_w = getmaskthreshold(vid_side{1},1);
-% thres_side_b = getmaskthreshold(vid_side{1},0);
-% thres_top_w = getmaskthreshold(vid_top{1},1);
-% thres_top_b = getmaskthreshold(vid_top{1},0);
-% thres_web = getmaskthreshold(vid_web{1},1);
-thres_side_w = 160;
-thres_side_b = 71;
-thres_top_w = 160;
-thres_top_b = 71;
+%calibrate mask thresholds
+thres_side_w = getmaskthreshold(vid_side{1},1);
+thres_side_b = getmaskthreshold(vid_side{1},0);
+thres_top_w = getmaskthreshold(vid_top{1},1);
+thres_top_b = getmaskthreshold(vid_top{1},0);
+thres_web = getmaskthreshold(vid_web{1},1);
+
+
+% thres_side_w = 160;
+% thres_side_b = 71;
+% thres_top_w = 160;
+% thres_top_b = 71;
+
 
 
 
