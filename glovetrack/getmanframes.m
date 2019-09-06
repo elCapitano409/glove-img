@@ -2,15 +2,18 @@ function manipulations = getmanframes()
 %GETMANFRAMES prompts user for time stamps of manipulations and returns
 %them as frame values
 
-manipulations = cell(2,1); %array to store manipulation timestamps
+manipulations = cell(3,1); %array to store manipulation timestamps
+framerate = [25,30,30]; %frame rates of all cameras
 
-%loop through 2 camera views 
-for ii = 1:2
+%loop through 3 camera views 
+for ii = 1:3
 
     %display feed name to user
     if ii == 1
         disp('---IONCAMERA---');
     elseif ii == 2
+        disp('---CANON---');
+    elseif ii == 3
         disp('---WEBCAM---');
     end
     
@@ -34,8 +37,8 @@ for ii = 1:2
         
         %assumption that both cameras are 60 frames a second
         %add numerical values to array
-        m(counter,1) = (str2double(startf{1})*60 + str2double(startf{2}))*30; %convert minutes and seconds to frames
-        m(counter,2) = (str2double(endf{1})*60 + str2double(endf{2}))*30; %convert minutes and seconds to frames
+        m(counter,1) = (str2double(startf{1})*60 + str2double(startf{2}))*framerate(ii); %convert minutes and seconds to frames
+        m(counter,2) = (str2double(endf{1})*60 + str2double(endf{2}))*framerate(ii); %convert minutes and seconds to frames
         counter = counter+1; %increase counter by one
     end
     

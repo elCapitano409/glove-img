@@ -1,32 +1,33 @@
-function c = webfindcircles(image)
+function [c,n] = webfindcircles(image,t)
 %WEBFINDCIRCLES finds the circles in an image from the webcam and sorts it
 %by y value
 
-sen = .94; %sensitivity of circle find function
-rad = [25,35];
+al = [1600,2200]; %area limits
+ol = [0.65,1.1]; %circularity limits
 
-tic; %start timer
-%loop until valid
-while true
+mask = image > t; %mask image due to brightness threshold
+mask = bwareaopen(mask,al(1)-1); %get rid of holes 
+s = regionprops(mask,'centroid','area','circularity'); %get centroids of all blobs
+%convert struct to 2d arrays
+c = cat(1,s.Centroid);
+a = cat(1,s.Area);
+o = cat(1,s.Circularity);
+
+
+id = a <= al(2) & o >= ol(1) & o <= ol(2); %get index of all blobs within area and circularity limits
+idc = [id,id]; %copy to make two columns
+
+c = c(idc); %save blobs within limits
+n = size(c,1)/2;
+ 
+try
+    c = reshape(c, [6,2]); %reshape to 6x2
+    c = sortrows(c,2); %sort circles by thier y value
     
-    %if function has been running for an unreasonable amount of time(stuck in a loop)
-    if toc > 5*60 || sen < .8
-        error('MyComponent:watchDog','Error. \nCircle find function in endless loop.');
-    end
-    
-    c = imfindcircles(image, [25 35], 'ObjectPolarity', 'bright','Sensitivity',sen);
-    
-    %validate number
-    if size(c,1) > 6
-        sen = sen - 0.05;
-    elseif size(c,1) < 6
-        error('MyComponent:blocked','Error. \nCord is blocked in this frame.');
-    else
-        break; %end loop
-    end
+catch %if wrong number of elements
+    c = nan*ones(6,2);
 end
 
-c = sortrows(c,2); %sort circles by thier y value
 
 end
 

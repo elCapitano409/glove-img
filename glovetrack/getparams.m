@@ -1,13 +1,13 @@
 function p = getparams(cam)
 %GETPARAMS returns parameters to undistort image
 
-imnum = 14; %number of calibration images
+imnum = 10; %number of calibration images
 
 images = cell(imnum,1);
 
 if strcmpi(cam,'ion')
     for ii = 1:imnum
-        images{ii} = ['C:\Users\Kyle Inzunza\Documents\University\NSERC\glove-img\glovetrack\' cam '_calibration_images\image' num2str(ii) '.png'];
+        images{ii} = ['C:\Users\Kyle Inzunza\Documents\University\NSERC\glove-img\glovetrack\' cam '_calibration_images\image' num2str(ii) '.jpg'];
     end
 else 
     error("MyComponent:CameraInvalid","Error. \nThe camera specified is invalid.");

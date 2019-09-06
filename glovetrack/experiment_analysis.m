@@ -19,7 +19,7 @@ disp('Loading videos...');
 %comment out to save runtime
 %load(exp); %load videos
 
-manipulations = getmanframes(); %get frames that were manipulated in the expirement
+%manipulations = getmanframes(); %get frames that were manipulated in the expirement
 
 
 %% calibrate videos videos
@@ -38,7 +38,10 @@ if ~isempty(manipulations{1})
     manipulations{1} = manipulations{1} - sync_side;
 end
 if ~isempty(manipulations{2})
-    manipulations{2} = manipulations{2} - sync_webcam;
+    manipulations{2} = manipulations{2} - sync_top;
+end
+if ~isempty(manipulations{3})
+    manipulations{3} = manipulations{3} - sync_webcam;
 end
 
 %trim videos
@@ -53,7 +56,8 @@ thres_side_w = getmaskthreshold(vid_side{1},1);
 thres_side_b = getmaskthreshold(vid_side{1},0);
 thres_top_w = getmaskthreshold(vid_top{1},1);
 thres_top_b = getmaskthreshold(vid_top{1},0);
-thres_web = getmaskthreshold(vid_web{1},1);
+%thres_web = getmaskthreshold(vid_web{1},1);
+thres_web = 120;
 
 
 % thres_side_w = 160;
@@ -222,13 +226,13 @@ for kk = 1:2
     %frame skipping variables
     s_mode = false; 
     s_counter = 0; %amount of frames skipped
-    s_frame = 3; %amount of frames to be skipped
+    s_frame = 1; %amount of frames to be skipped
     
     
     for ii = 2:fnum %loop through remaining frames
         waitbar(ii/fnum); %update progress bar
         
-        if isman(ii,manipulations) %check if frame ii is a manipulation frame
+        if isman(ii,kk,manipulations) %check if frame ii is a manipulation frame
             p(:,ii,:) = nan*ones(size(p(:,1,:))); %write whole frame as not a number
             continue; %skip this loop interation
         end
@@ -313,22 +317,8 @@ for ii = 2:fnum
         continue; %go to next iteration of loop
     end
     
+    d.pweb(:,ii,:,thres_web) = webfindcircles(vid_web{ii}); %get marker positions
     
-    try
-        d.pweb(:,ii,:) = webfindcircles(vid_web{ii}); %get marker positions
-    catch ME
-        switch ME.identifier
-            case 'MyComponent:blocked'
-                d.pweb(:,ii,:) = nan*ones(6,2); %write the whole frame as not a number
-                disp(['Circles missing on WEBCAM at frame ' num2str(ii)]);
-            case 'MyComponent:watchDog'
-                d.pweb(:,ii,:) = nan*ones(6,2); %write the whole frame as not a number
-                disp(['Too many circles on WEBCAM at frame ' num2str(ii)]);
-                imshow(vid_web{ii}); %display current frame
-            otherwise
-                rethrow(ME); %error was not resolved
-        end
-    end
 end
 
 close(wb); %close progress bar
@@ -336,9 +326,17 @@ close(wb); %close progress bar
 %% write data
 
 %format and write data to files
+
+%downsample data
+d.pside = dsample30to25(d.pside);
+d.pweb = dsample30to25(d.pweb);
+
+%save data to excel
 writematrix(formatdata(d.mside,d.pside), [exp '_side.xls']);
 writematrix(formatdata(d.mtop,d.ptop), [exp '_top.xls']);
 writematrix(formatdata({'Cord1','Cord2','Cord3','Cord4','Cord5','Cord6'},d.pweb), [exp '_web.xls']);
+
+save expresults.mat d %save data to .mat
 
 disp(['Processing of ' expname ' complete.']);
 
