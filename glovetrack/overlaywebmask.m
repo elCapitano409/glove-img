@@ -1,12 +1,12 @@
-function image = overlaycirclemask(image,c)
+function image = overlaywebmask(image,c)
 %OVERLAYCIRCLEMAS overlays a mask over images to cover everything other
 %than a certain radius around tracking markers
 [h,w] = size(image); %get image dimensions
 
 mask = zeros(h,w); % blank mask
 
-
-r = 100; %radius of area
+base = 350; %radius of area
+height = 50;
 cnum = size(c,1); %number of circles
 c = reshape(c,cnum,2); %change array from 3d to 2d
 
@@ -14,8 +14,8 @@ c = reshape(c,cnum,2); %change array from 3d to 2d
 for ii = 1:cnum
     center = round(c(ii,:)); %get center of circle
         
-    x = [center(1)-r+1,center(1)+r]; %x indices
-    y = [center(2)-r+1,center(2)+r]; %y indices
+    x = [center(1)-base+1,center(1)+base]; %x indices
+    y = [center(2)-height+1,center(2)+height]; %y indices
 
     %adjusts indices to avoid out of bounds
     if y(1) < 1

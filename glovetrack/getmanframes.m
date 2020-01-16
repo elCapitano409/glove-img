@@ -5,7 +5,7 @@ function manipulations = getmanframes()
 manipulations = cell(3,1); %array to store manipulation timestamps
 framerate = [25,30,30]; %frame rates of all cameras
 
-%loop through 3 camera views 
+%loop through 2 camera views 
 for ii = 1:3
 
     %display feed name to user

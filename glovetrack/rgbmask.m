@@ -32,5 +32,7 @@ mask{3} = otherimages{2} < t;
 
 masked_image = mask{1} & ~(~mask{2} | ~mask{3}); %exclude two of the channels from the image 
 
+masked_image = bwareaopen(~bwareaopen(~masked_image,160),50); %fill black and white holes
+
 end
 

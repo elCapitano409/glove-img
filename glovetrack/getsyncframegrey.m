@@ -1,5 +1,6 @@
-function sync = getsyncframe(s)
-%GETSYNCFRAME New version of function to identify the sync frame 
+function sync = getsyncframegrey(gs)
+%GETSYNCFRAME New version of function to identify the sync frame that
+%checks in grayscale
 
 f_max = 250; %maximum number of frames to search
 
@@ -13,7 +14,8 @@ for ii = 1:f_max
     
     %WORK IN PROGRESS
     waitbar(ii/f_max); %update progress bar
-    mask = rgb2gray(cat(3,s(ii).r,s(ii).g,s(ii).b)) > threshold; %copy image to mask
+%     mask = rgb2gray(cat(3,s(ii).r,s(ii).g,s(ii).b)) > threshold; %copy image to mask
+    mask = gs{ii} > threshold;
     intensity(ii) = mean2(mask); %get mean intensity of mask
 end
 
