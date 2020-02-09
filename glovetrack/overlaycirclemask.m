@@ -6,7 +6,7 @@ function image = overlaycirclemask(image,c)
 mask = zeros(h,w); % blank mask
 
 
-r = 100; %radius of area
+r = 150; %radius of area
 cnum = size(c,1); %number of circles
 c = reshape(c,cnum,2); %change array from 3d to 2d
 

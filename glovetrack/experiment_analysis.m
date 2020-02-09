@@ -51,7 +51,7 @@ sync_top = getsyncframe(vid);
 % end
 % 
 %trim videos
-vid = vid(sync_top:end);
+%vid = vid(sync_top:end);
 % web = web(sync_webcam:end);
 % vid_side = vid_side(sync_side:end);
 % vid_web = vid_web(sync_webcam:end);

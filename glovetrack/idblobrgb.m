@@ -1,4 +1,4 @@
-function c = idblobgrey(image,prev,al,t)
+function c = idblobrgb(image,prev,al,t)
 %IDBLOB matches blob in image to previous coordinat
 
 

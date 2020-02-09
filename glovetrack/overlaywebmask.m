@@ -6,7 +6,7 @@ function image = overlaywebmask(image,c)
 mask = zeros(h,w); % blank mask
 
 base = 350; %radius of area
-height = 50;
+height = 30;
 cnum = size(c,1); %number of circles
 c = reshape(c,cnum,2); %change array from 3d to 2d
 

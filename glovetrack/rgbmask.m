@@ -3,7 +3,7 @@ function masked_image = rgbmask(rgbimage, c)
 
 otherimages = {rgbimage.r,rgbimage.g,rgbimage.b};
 
-t = 120; %threshold for colour masking
+t = 140; %threshold for colour masking
 
 
 %validate colour selection

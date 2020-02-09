@@ -19,7 +19,7 @@ web = web(sync_webcam:end);
 
 fnum = size(web,2);
 p = zeros(6,fnum,2);
-t = 240; %mask threshold
+t = 220; %mask threshold
 skip = 10;
 
 [c,a] = blobprops(greymask(web{1},t)); %find markers in frame 1
@@ -70,29 +70,35 @@ for ii = 2:fnum
     %loop through every marker
     for jj = 1:6
         try
-            p(jj,ii,:) = idblobgrey(web{ii},prev(jj,:,:),alimit,t);
+            %temp if statement for one of the videos
+            if(jj ~= 4)
+                p(jj,ii,:) = idblobgrey(web{ii},prev(jj,:,:),alimit,t);
+            else
+                p(jj,ii,:) = p(4,1,:);
+            end
         catch ME
             
-            %write next n positions as nan
             p(jj,ii:ii+skip,:) = nan*ones(size(p(jj,ii:ii+skip,:)));
             
-            [c,~] = blobprops(greymask(web{ii+skip},t)); %find markers in frame after skip
-            printcircles(web{web+skip}, c); %print circles to user
-           
-            %loop through every marker
-            for kk = 1:marker_num
-                %loop until valid input
-                while true
-                    temp = input(['ID #' num2str(ii) ': ']);
-                    
-                    if floor(temp) == temp && temp <= size(c,1) && temp > 0
-                        marker(ii,:) = c(temp,:); %record circle index
-                        break; %end loop
-                    else
-                        disp('Input invalid, try again.');
-                    end
-                end
-            end
+%             %write next n positions as nan
+%             p(jj,ii:ii+skip,:) = nan*ones(size(p(jj,ii:ii+skip,:)));
+%             
+%             [c,~] = blobprops(greymask(web{ii+skip},t)); %find markers in frame after skip
+%             printcircles(web{ii+skip}, c); %print circles to user
+%             %loop through every marker
+%             for kk = 1:marker_num
+%                 %loop until valid input
+%                 while true
+%                     temp = input(['ID #' num2str(ii) ': ']);
+%                     
+%                     if floor(temp) == temp && temp <= size(c,1) && temp > 0
+%                         marker(ii,:) = c(temp,:); %record circle index
+%                         break; %end loop
+%                     else
+%                         disp('Input invalid, try again.');
+%                     end
+%                 end
+%             end
             
         end
     end
