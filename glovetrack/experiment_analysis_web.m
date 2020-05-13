@@ -12,6 +12,9 @@ end
 close all; %close windows
 clc; %clear command window
 
+load(exp_video);
+ 
+
 %sync video 
 disp('Syncing WEBCAM...');
 sync_webcam = getsyncframegrey(web);
@@ -70,18 +73,15 @@ for ii = 2:fnum
     %loop through every marker
     for jj = 1:6
         try
-            %temp if statement for one of the videos
-            if(jj ~= 4)
-                p(jj,ii,:) = idblobgrey(web{ii},prev(jj,:,:),alimit,t);
-            else
-                p(jj,ii,:) = p(4,1,:);
-            end
+            
+            p(jj,ii,:) = idblobgrey(web{ii},prev(jj,:,:),alimit,t);
+            
         catch ME
             
             p(jj,ii:ii+skip,:) = nan*ones(size(p(jj,ii:ii+skip,:)));
             
 %             %write next n positions as nan
-%             p(jj,ii:ii+skip,:) = nan*ones(size(p(jj,ii:ii+skip,:)));
+            %             p(jj,ii:ii+skip,:) = nan*ones(size(p(jj,ii:ii+skip,:)));
 %             
 %             [c,~] = blobprops(greymask(web{ii+skip},t)); %find markers in frame after skip
 %             printcircles(web{ii+skip}, c); %print circles to user
@@ -114,7 +114,7 @@ for ii = 1:6
 end
 
 disp("---COMPLETE---");
-
+% 
 % m1 = reshape(p(1,:,:),fnum,2);
 % m2 = reshape(p(2,:,:),fnum,2);
 % m3 = reshape(p(3,:,:),fnum,2);

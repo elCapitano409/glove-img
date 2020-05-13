@@ -1,5 +1,5 @@
 function image = overlaycirclemask(image,c)
-%OVERLAYCIRCLEMAS overlays a mask over images to cover everything other
+%OVERLAYCIRCLEMASK overlays a mask over images to cover everything other
 %than a certain radius around tracking markers
 [h,w] = size(image); %get image dimensions
 
@@ -35,7 +35,7 @@ for ii = 1:cnum
 %         xm(2) = center(1)+r - w;
     end  
     try
-    mask(y(1):y(2),x(1):x(2)) = 1; %mask specific area
+        mask(y(1):y(2),x(1):x(2)) = 1; %mask specific area
     catch ME
         rethrow(ME);
     end

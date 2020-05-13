@@ -2,8 +2,9 @@ function printcircles(frame,c)
 %PRINTCIRCLES prints all of the cirlces onto the image with index next to
 %it
 
+radius = 2; %radius of circle in pixels
 cnum = size(c,1); %get number of circles;
-r = 2 * ones(1,cnum);
+r = radius * ones(1,cnum); 
 
 imshow(frame); %display image
 viscircles(c,r,'Color','b'); %display circles

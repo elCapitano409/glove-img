@@ -21,7 +21,7 @@ clc; %clear command window
 disp('Loading videos...');
 %comment out to save runtime
 %tic;
-%load(exp); %load bluescale video
+%load(exp); %load rgb video
 %toc
 
 %keep original function for simplicity
@@ -30,13 +30,9 @@ manipulations = getmanframes(); %get frames that were manipulated in the expirem
 
 %% calibrate videos 
 
-%TODO: fix this to single joint
-
 %get sync frames for all videos
 disp('Syncing wearable video...');
 sync_top = getsyncframe(vid);
-% disp('Syncing WEBCAM...');
-% sync_webcam = getsyncframegrey(web);
 
 
 % %if manipulations exist adjust manipulations to sync
@@ -49,9 +45,11 @@ sync_top = getsyncframe(vid);
 % if ~isempty(manipulations{3})
 %     manipulations{3} = manipulations{3} - sync_webcam;
 % end
-% 
+
+
 %trim videos
-%vid = vid(sync_top:end);
+vid = vid(sync_top:end);
+
 % web = web(sync_webcam:end);
 % vid_side = vid_side(sync_side:end);
 % vid_web = vid_web(sync_webcam:end);
@@ -120,6 +118,7 @@ d.name = markername;
 
 %populate first frame of position data
 d.p(:,1,:) = marker;
+
 
 close all; %close open figures
 
@@ -202,26 +201,6 @@ close(wb); %close progress bar
 close all; %close open figures
 
 
-% %do webcam stuff in other another script
-% %% remaining frame (webcam)
-% 
-% wb = waitbar(0,'Analysing webcam frames...'); %start progress bar
-% 
-% %loop through remaining frames
-% for ii = 2:fnum
-%     
-%     waitbar(ii/fnum); %update progress bar
-%     
-%     %check if manipulation frame
-%     if isman(ii,manipulations)
-%         d.pweb(:,ii,:) = nan*ones(6,2); %write the whole frame as not a number
-%         continue; %go to next iteration of loop
-%     end
-%     
-%     d.pweb(:,ii,:,thres_web) = webfindcircles(vid_web{ii}); %get marker positions
-%     
-% end
-
 
 
 % %% write data
@@ -229,9 +208,7 @@ close all; %close open figures
 % %for now do everything from copy pasting to excel
 % %format and write data to files
 % 
-% %downsample data
-% d.pside = dsample30to25(d.pside);
-% d.pweb = dsample30to25(d.pweb);
+
 % 
 % %save data to excel
 % writematrix(formatdata(d.mside,d.pside), [exp '_side.xls']);
